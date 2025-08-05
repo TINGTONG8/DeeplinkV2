@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DeepLink</string>
+    <string name="app_name">DeepLinkV2</string>
 
     //List
     <string name="shop">Shop</string>

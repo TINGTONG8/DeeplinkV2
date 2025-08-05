@@ -96,7 +96,7 @@ fun BottomSheetComponent(
         ) {
             Text(
                 stringResource(R.string.qr),
-                modifier = Modifier.padding(bottom = 20.dp),
+                modifier = Modifier,
                 fontSize = 18.sp,
                 fontWeight = FontWeight(800),
                 fontFamily = FontFamily.SansSerif,

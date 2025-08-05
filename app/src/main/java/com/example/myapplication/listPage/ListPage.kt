@@ -94,7 +94,7 @@ fun ListPage(
                 onClick = {
                     vm.titleAppBar.intValue = R.string.iphone_16_pro_max
                     vm.detailImage.intValue = R.drawable.iphone_16_pro_max_detail
-                    vm.price.intValue = 1
+                    vm.price.intValue = 2000
                     navController.safeNavigate("detail_page_route")
                 }
             )

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -110,11 +111,7 @@ fun DetailPage(
                     Toast.makeText(context, "Payment Closed or Failed", Toast.LENGTH_LONG).show()
                 }
                 PaymentStatus.Pending -> {
-                    showQRBottomSheet.value = false
-                    vm.intentTitleAppBar.intValue = R.string.failure
-                    vm.intentTitleAppBarColor.intValue = R.color.red
-                    vm.intentStatus.intValue = R.drawable.ic_x
-                    Toast.makeText(context, "Payment Closed or Failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Scan QR to pay.", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -179,19 +176,27 @@ fun DetailPage(
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(50.dp))
-                Image(
+                Spacer(modifier = Modifier.height(16.dp))
+                Box(
                     modifier = Modifier
-                        .size(400.dp)
-                        .padding(horizontal = 25.dp),
-                    painter = painterResource(vm.detailImage.intValue),
-                    contentDescription = "--",
-                    contentScale = ContentScale.Fit
-                )
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 25.dp),
+                        painter = painterResource(vm.detailImage.intValue),
+                        contentDescription = "--",
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
                 Text(
                     "$ ${vm.totalPrice}.00",
                     modifier = Modifier
-                        .padding(top = 30.dp),
+                        .padding(top = 16.dp),
                     fontSize = 30.sp,
                     fontWeight = FontWeight(700),
                     fontFamily = FontFamily.SansSerif,
@@ -199,7 +204,7 @@ fun DetailPage(
                 )
                 AddMinusComponent(
                     modifier = Modifier
-                        .padding(vertical = 20.dp),
+                        .padding(vertical = 16.dp),
                     onMinusClick = {
                         if (vm.qty.intValue > 1)
                             vm.qty.intValue--
@@ -221,7 +226,7 @@ fun DetailPage(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 ButtonComponent(
                     modifier = Modifier,
                     buttonText = stringResource(R.string.buy_qr),
@@ -238,6 +243,7 @@ fun DetailPage(
                         )
                     }
                 )
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
 
