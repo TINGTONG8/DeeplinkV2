@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,18 +49,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
+import com.example.myapplication.PaymentStatus
 import com.example.myapplication.R
 import com.example.myapplication.UiController
 import com.example.myapplication.ViewModel
 import com.example.myapplication.utils.AddMinusComponent
 import com.example.myapplication.utils.BottomSheetComponent
 import com.example.myapplication.utils.ButtonComponent
-import com.example.myapplication.utils.safeNavigate
-import androidx.core.net.toUri
-import com.example.myapplication.PaymentStatus
 import com.example.myapplication.utils.LoadingDialogComponent
+import com.example.myapplication.utils.VideoPlayer
 import com.example.myapplication.utils.loadingFlow
+import com.example.myapplication.utils.safeNavigate
 import kotlinx.coroutines.delay
 
 private const val TIMER_DURATION_SECONDS = 180
@@ -74,6 +79,11 @@ fun DetailPage(
     val showQRBottomSheet = remember { mutableStateOf(false) }
     val timeLeftInSeconds = remember { mutableIntStateOf(TIMER_DURATION_SECONDS) }
     val isLoading by loadingFlow.collectAsState()
+    val isContentVisible = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isContentVisible.value = true
+    }
 
     LaunchedEffect(
         key1 = timeLeftInSeconds.intValue,
@@ -82,7 +92,7 @@ fun DetailPage(
     ) {
         if (showQRBottomSheet.value && timeLeftInSeconds.intValue > 0 && !isLoading) {
             val secondsRemaining = timeLeftInSeconds.intValue
-            if (secondsRemaining % 15 == 0) {
+            if (secondsRemaining % 10 == 0) {
                 vm.checkPaymentStatus()
             }
 
@@ -137,8 +147,7 @@ fun DetailPage(
                             }
                         ) {
                             Icon(
-                                modifier = Modifier
-                                    .size(50.dp),
+                                modifier = Modifier.size(50.dp),
                                 imageVector = Icons.Default.KeyboardArrowLeft,
                                 contentDescription = "Pop back"
                             )
@@ -161,10 +170,18 @@ fun DetailPage(
 
         ) { innerPadding ->
 
+            if (vm.isDetailVideoBackground.value) {
+                VideoPlayer(
+                    modifier = Modifier.fillMaxSize(),
+                    video = R.raw.vision,
+                    onClick = {}
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(colorResource(R.color.white))
+                    .background(colorResource(if (vm.isDetailVideoBackground.value) R.color.transparent else R.color.white))
                     .padding(innerPadding)
                     .padding(horizontal = 15.dp)
                     .clickable(
@@ -183,66 +200,113 @@ fun DetailPage(
                         .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 25.dp),
-                        painter = painterResource(vm.detailImage.intValue),
-                        contentDescription = "--",
-                        contentScale = ContentScale.Fit
-                    )
-                }
-
-                Text(
-                    "$ ${vm.totalPrice}.00",
-                    modifier = Modifier
-                        .padding(top = 16.dp),
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight(700),
-                    fontFamily = FontFamily.SansSerif,
-                    textAlign = TextAlign.Center
-                )
-                AddMinusComponent(
-                    modifier = Modifier
-                        .padding(vertical = 16.dp),
-                    onMinusClick = {
-                        if (vm.qty.intValue > 1)
-                            vm.qty.intValue--
-                    },
-                    qtyText = vm.qty.intValue,
-                    onAddClick = {
-                        vm.qty.intValue++
-                    }
-                )
-                ButtonComponent(
-                    modifier = Modifier,
-                    buttonText = stringResource(R.string.buy_deep_link),
-                    buttonColor = colorResource(R.color.gray),
-                    onClick = {
-                        vm.openPrinceAppPayment { token ->
-                            val browserIntent = Intent(Intent.ACTION_VIEW,
-                                "https://link-uat.princebank.com.kh/sdk?orderNo=${token}&appPkg=Y29tLmV4YW1wbGUubXlhcHBsaWNhdGlvbg==&scheme=bXlhcHBzLWNoZW1l".toUri())
-                            context.startActivity(browserIntent)
-                        }
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                ButtonComponent(
-                    modifier = Modifier,
-                    buttonText = stringResource(R.string.buy_qr),
-                    buttonColor = colorResource(R.color.gray),
-                    onClick = {
-                        vm.generateQrForPayment(
-                            onSuccess = {
-                                timeLeftInSeconds.intValue = TIMER_DURATION_SECONDS
-                                showQRBottomSheet.value = true
-                            },
-                            onFailure = { errorMessage ->
-                                Toast.makeText(context, errorMessage ?: "Failed to get QR code", Toast.LENGTH_SHORT).show()
-                            }
+                    this@Column.AnimatedVisibility(
+                        visible = isContentVisible.value,
+                        enter = slideInVertically(
+                            initialOffsetY = { it },
+                            animationSpec = tween(durationMillis = 500, delayMillis = 100)
+                        ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 100))
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 25.dp),
+                            painter = painterResource(vm.detailImage.intValue),
+                            contentDescription = "--",
+                            contentScale = ContentScale.Fit
                         )
                     }
-                )
+                }
+                AnimatedVisibility(
+                    visible = isContentVisible.value,
+                    enter = slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(durationMillis = 500, delayMillis = 200)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 200))
+                ) {
+                    Text(
+                        "$ ${vm.totalPrice}.00",
+                        modifier = Modifier
+                            .padding(top = 16.dp),
+                        color = colorResource(if (vm.isDetailVideoBackground.value) R.color.white else R.color.black),
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight(700),
+                        fontFamily = FontFamily.SansSerif,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                AnimatedVisibility(
+                    visible = isContentVisible.value,
+                    enter = slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(durationMillis = 500, delayMillis = 300)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 300))
+                ) {
+                    AddMinusComponent(
+                        modifier = Modifier
+                            .padding(vertical = 16.dp),
+                        onMinusClick = {
+                            if (vm.qty.intValue > 1)
+                                vm.qty.intValue--
+                        },
+                        qtyText = vm.qty.intValue,
+                        qtyTextColor = if (vm.isDetailVideoBackground.value) R.color.white else R.color.black,
+                        onAddClick = {
+                            vm.qty.intValue++
+                        }
+                    )
+                }
+                AnimatedVisibility(
+                    visible = isContentVisible.value,
+                    enter = slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(durationMillis = 500, delayMillis = 400)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 400))
+                ) {
+                    ButtonComponent(
+                        modifier = Modifier,
+                        buttonText = stringResource(R.string.buy_deep_link),
+                        buttonColor = colorResource(R.color.gray),
+                        onClick = {
+                            vm.openPrinceAppPayment { token ->
+                                val browserIntent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://link-uat.princebank.com.kh/sdk?orderNo=${token}&appPkg=Y29tLmV4YW1wbGUubXlhcHBsaWNhdGlvbg==&scheme=bXlhcHBzLWNoZW1l".toUri()
+                                )
+                                context.startActivity(browserIntent)
+                            }
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                AnimatedVisibility(
+                    visible = isContentVisible.value,
+                    enter = slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(durationMillis = 500, delayMillis = 500)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 500))
+                ) {
+                    ButtonComponent(
+                        modifier = Modifier,
+                        buttonText = stringResource(R.string.buy_qr),
+                        buttonColor = colorResource(R.color.gray),
+                        onClick = {
+                            vm.generateQrForPayment(
+                                onSuccess = {
+                                    timeLeftInSeconds.intValue = TIMER_DURATION_SECONDS
+                                    showQRBottomSheet.value = true
+                                },
+                                onFailure = { errorMessage ->
+                                    Toast.makeText(
+                                        context,
+                                        errorMessage ?: "Failed to get QR code",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
+                        }
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -266,7 +330,11 @@ fun DetailPage(
                                 timeLeftInSeconds.intValue = TIMER_DURATION_SECONDS
                             },
                             onFailure = { errorMessage ->
-                                Toast.makeText(context, errorMessage ?: "Failed to get QR code", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    errorMessage ?: "Failed to get QR code",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         )
                     }

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -32,6 +33,7 @@ fun AddMinusComponentComponentPreview() {
             .padding(vertical = 15.dp),
         onMinusClick = {},
         qtyText = 5,
+        qtyTextColor = R.color.black,
         onAddClick = {}
     )
 }
@@ -41,6 +43,7 @@ fun AddMinusComponent (
     modifier: Modifier,
     onMinusClick: () -> Unit,
     qtyText: Int,
+    qtyTextColor: Int,
     onAddClick: () -> Unit,
 ) {
     Row (
@@ -64,6 +67,7 @@ fun AddMinusComponent (
             qtyText.toString(),
             modifier = Modifier
                 .weight(5F),
+            color = colorResource(qtyTextColor),
             fontSize = 30.sp,
             fontWeight = FontWeight(700),
             fontFamily = FontFamily.SansSerif,

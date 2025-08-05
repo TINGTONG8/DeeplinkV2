@@ -41,6 +41,15 @@ fun ListComponentPreview() {
             onClick = {}
         )
         Spacer(modifier = Modifier.height(20.dp))
+        ListComponentV2 (
+            modifier = Modifier,
+            modifierAlign = Alignment.CenterEnd,
+            title = stringResource(R.string.apple_vision_pro),
+            titleAlign = TextAlign.End,
+            iconRight = painterResource(R.drawable.vision_pro_list),
+            onClick = {}
+        )
+        Spacer(modifier = Modifier.height(20.dp))
         ListComponent (
             modifier = Modifier,
             title = stringResource(R.string.galaxy_s24),
@@ -136,7 +145,7 @@ fun ListComponent (
 fun ListComponentV2 (
     modifier: Modifier,
     modifierAlign: Alignment = Alignment.CenterStart,
-    title: String,
+    title: String = stringResource(R.string.iphone_16_pro_max),
     titleAlign: TextAlign = TextAlign.Center,
     iconLeft: Painter? = null,
     iconRight: Painter? = null,
@@ -173,7 +182,7 @@ fun ListComponentV2 (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(end = 145.dp),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.Crop
             )
         }
         Text(
