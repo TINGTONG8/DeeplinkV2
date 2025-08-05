@@ -38,6 +38,8 @@ enum class DeepLinkResult {
 
 class ViewModel : ViewModel() {
 
+    val isDetailVideoBackground = mutableStateOf(false)
+
     val titleAppBar = mutableIntStateOf(R.string.iphone_16_pro_max)
     val detailImage = mutableIntStateOf(R.drawable.iphone_16_pro_max_detail)
     var price = mutableIntStateOf(5000)
