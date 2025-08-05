@@ -123,7 +123,7 @@ fun ListPage(
                         vm.isDetailVideoBackground.value = false
                         vm.titleAppBar.intValue = R.string.ipad_pro
                         vm.detailImage.intValue = R.drawable.ipad_pro
-                        vm.price.intValue = 1
+                        vm.price.intValue = 10
                         navController.safeNavigate("detail_page_route")
                     }
                 )
@@ -148,7 +148,7 @@ fun ListPage(
                         vm.isDetailVideoBackground.value = true
                         vm.titleAppBar.intValue = R.string.apple_vision_pro
                         vm.detailImage.intValue = R.drawable.vision_pro_list
-                        vm.price.intValue = 5500
+                        vm.price.intValue = 20
                         navController.safeNavigate("detail_page_route")
                     }
                 )
@@ -171,7 +171,7 @@ fun ListPage(
                         vm.isDetailVideoBackground.value = false
                         vm.titleAppBar.intValue = R.string.iphone_16_pro_max
                         vm.detailImage.intValue = R.drawable.iphone_16_pro_max_detail
-                        vm.price.intValue = 2000
+                        vm.price.intValue = 30
                         navController.safeNavigate("detail_page_route")
                     }
                 )
@@ -194,7 +194,7 @@ fun ListPage(
                         vm.isDetailVideoBackground.value = false
                         vm.titleAppBar.intValue = R.string.galaxy_s24
                         vm.detailImage.intValue = R.drawable.galaxy_s24_detail
-                        vm.price.intValue = 1500
+                        vm.price.intValue = 40
                         navController.safeNavigate("detail_page_route")
                     }
                 )
@@ -217,7 +217,7 @@ fun ListPage(
                         vm.isDetailVideoBackground.value = false
                         vm.titleAppBar.intValue = R.string.apple_watch_series_10
                         vm.detailImage.intValue = R.drawable.apple_watch_series_10_detail
-                        vm.price.intValue = 500
+                        vm.price.intValue = 50
                         navController.safeNavigate("detail_page_route")
                     }
                 )
@@ -242,7 +242,7 @@ fun ListPage(
                         vm.isDetailVideoBackground.value = false
                         vm.titleAppBar.intValue = R.string.galaxy_buds_3_pro
                         vm.detailImage.intValue = R.drawable.galaxy_buds_3_pro_detail
-                        vm.price.intValue = 250
+                        vm.price.intValue = 60
                         navController.safeNavigate("detail_page_route")
                     }
                 )
