@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    //Transparent
+    <color name="transparent">#00000000</color>
+
+    //100%
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="light_gray">#F0F0F0</color>
+    <color name="gray">#E6E6E6</color>
+    <color name="green">#008000</color>
+    <color name="red">#FF0000</color>
+    <color name="orange">#FFA500</color>
+
+    //50%
+    <color name="black_50">#80000000</color>
+
+    //30%
+    <color name="blue_30">#4D0000FF</color>
+</resources>
