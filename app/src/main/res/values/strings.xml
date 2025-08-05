@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">DeepLink</string>
+
+    //List
+    <string name="shop">Shop</string>
+    <string name="iphone_16_pro_max">iPhone 16 Pro Max</string>
+    <string name="galaxy_s24">Galaxy S24+</string>
+    <string name="apple_watch_series_10_">Apple Watch\nSeries 10</string>
+    <string name="apple_watch_series_10">Apple Watch Series 10</string>
+    <string name="galaxy_buds_3_pro">Galaxy Buds3 Pro</string>
+
+    //Button Text
+    <string name="buy_deep_link">Buy (DeepLink)</string>
+    <string name="buy_qr">Buy (QR)</string>
+    <string name="repay">Repay</string>
+    <string name="done">Done</string>
+
+    //Intent
+    <string name="successful">Successful</string>
+    <string name="failure">Failure</string>
+    <string name="order_no_colon">Order No:</string>
+    <string name="model_colon">Model:</string>
+    <string name="qty_colon">Qty:</string>
+    <string name="amount_colon">Amount:</string>
+
+    //Other Text
+    <string name="qr">QR</string>
+    <string name="expire_in">Expire in</string>
+    <string name="expired">Expired</string>
+    <string name="sec">sec</string>
+    <string name="loading">Loading</string>
+
+</resources>
