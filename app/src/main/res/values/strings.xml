@@ -31,5 +31,6 @@
     <string name="expired">Expired</string>
     <string name="sec">sec</string>
     <string name="loading">Loading</string>
+    <string name="scan_qr_to_pay">Scan QR to Pay</string>
 
 </resources>
