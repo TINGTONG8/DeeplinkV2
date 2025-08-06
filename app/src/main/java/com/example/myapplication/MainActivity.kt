@@ -63,14 +63,19 @@ fun AppNavigation(sharedViewModel: ViewModel) {
                 when (result) {
                     DeepLinkResult.Success -> {
                         navController.navigate("intent_page_route") {
+                            sharedViewModel.intentTitleAppBar.intValue = R.string.successful
+                            sharedViewModel.intentTitleAppBarColor.intValue = R.color.green
+                            sharedViewModel.intentStatus.intValue = R.drawable.ic_check
                             popUpTo("list_page_route") { inclusive = false }
                         }
                     }
                     DeepLinkResult.Failure -> {
-                        navController.navigate("list_page_route") {
+                        navController.navigate("intent_page_route") {
+                            sharedViewModel.intentTitleAppBar.intValue = R.string.failure
+                            sharedViewModel.intentTitleAppBarColor.intValue = R.color.red
+                            sharedViewModel.intentStatus.intValue = R.drawable.ic_x
                             popUpTo("list_page_route") { inclusive = true }
                         }
-                        Toast.makeText(context, "Payment Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

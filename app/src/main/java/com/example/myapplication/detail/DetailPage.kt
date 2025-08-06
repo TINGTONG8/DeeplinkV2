@@ -7,7 +7,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,6 +59,7 @@ import com.example.myapplication.UiController
 import com.example.myapplication.ViewModel
 import com.example.myapplication.utils.AddMinusComponent
 import com.example.myapplication.utils.BottomSheetComponent
+import com.example.myapplication.utils.BottomSheetMsgComponent
 import com.example.myapplication.utils.ButtonComponent
 import com.example.myapplication.utils.LoadingDialogComponent
 import com.example.myapplication.utils.VideoPlayer
@@ -77,6 +80,7 @@ fun DetailPage(
     val context = LocalContext.current
 
     val showQRBottomSheet = remember { mutableStateOf(false) }
+    val showAlertToPayBottomSheet = remember { mutableStateOf(false) }
     val timeLeftInSeconds = remember { mutableIntStateOf(TIMER_DURATION_SECONDS) }
     val isLoading by loadingFlow.collectAsState()
     val isContentVisible = remember { mutableStateOf(false) }
@@ -118,12 +122,18 @@ fun DetailPage(
                     vm.intentTitleAppBar.intValue = R.string.failure
                     vm.intentTitleAppBarColor.intValue = R.color.red
                     vm.intentStatus.intValue = R.drawable.ic_x
-                    Toast.makeText(context, "Payment Closed or Failed", Toast.LENGTH_LONG).show()
                 }
                 PaymentStatus.Pending -> {
-                    Toast.makeText(context, "Scan QR to pay.", Toast.LENGTH_LONG).show()
+                    showAlertToPayBottomSheet.value = true
                 }
             }
+        }
+    }
+
+    LaunchedEffect(showAlertToPayBottomSheet.value) {
+        if (showAlertToPayBottomSheet.value) {
+            delay(3000L)
+            showAlertToPayBottomSheet.value = false
         }
     }
 
@@ -323,6 +333,7 @@ fun DetailPage(
                     timeLeftInSeconds = timeLeftInSeconds.intValue,
                     onDismiss = {
                         showQRBottomSheet.value = false
+                        showAlertToPayBottomSheet.value = false
                     },
                     onRepay = {
                         vm.generateQrForPayment(
@@ -340,6 +351,24 @@ fun DetailPage(
                     }
                 )
             }
+        }
+
+        AnimatedVisibility(
+            visible = showAlertToPayBottomSheet.value,
+            enter = slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(durationMillis = 500)
+            ) + fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = slideOutVertically(
+                targetOffsetY = { -it },
+                animationSpec = tween(durationMillis = 500)
+            ) + fadeOut(animationSpec = tween(durationMillis = 500))
+        ) {
+            BottomSheetMsgComponent(
+                modifier = Modifier
+                    .padding(top = 50.dp),
+                title = stringResource(R.string.scan_qr_to_pay)
+            )
         }
 
         if (isLoading) {
