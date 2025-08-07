@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +48,8 @@ fun AddMinusComponent (
     qtyTextColor: Int,
     onAddClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Row (
         modifier = modifier
             .fillMaxWidth(),
@@ -57,6 +61,9 @@ fun AddMinusComponent (
                 .size(50.dp)
                 .clip(RoundedCornerShape(25.dp))
                 .clickable {
+                    if (qtyText > 1) {
+                        haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
+                    }
                     onMinusClick.invoke()
                 },
             painter = painterResource(R.drawable.icon_minus),
@@ -78,6 +85,7 @@ fun AddMinusComponent (
                 .size(50.dp)
                 .clip(RoundedCornerShape(25.dp))
                 .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                     onAddClick.invoke()
                 },
             painter = painterResource(R.drawable.icon_add),

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -19,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
+import com.google.android.material.textfield.TextInputLayout.BoxBackgroundMode
 
 @Preview
 @Composable
@@ -33,6 +35,8 @@ fun BottomSheetMsgComponentPreview() {
 @Composable
 fun BottomSheetMsgComponent(
     modifier: Modifier,
+    background: Color = colorResource(R.color.gray),
+    textColor: Color = colorResource(R.color.black),
     title: String,
 ) {
 
@@ -42,7 +46,7 @@ fun BottomSheetMsgComponent(
             .padding(horizontal = 15.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(
-                color = colorResource(R.color.gray),
+                color = background,
                 shape = RoundedCornerShape(20.dp)
             ),
         contentAlignment = Alignment.Center
@@ -51,7 +55,7 @@ fun BottomSheetMsgComponent(
             text = title,
             modifier = Modifier
                 .padding(20.dp),
-            color = colorResource(R.color.black),
+            color = textColor,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.SansSerif

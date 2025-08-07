@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -40,9 +42,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -78,9 +82,11 @@ fun DetailPage(
 ) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
 
     val showQRBottomSheet = remember { mutableStateOf(false) }
-    val showAlertToPayBottomSheet = remember { mutableStateOf(false) }
+    val showAlertToPayTopSheet = remember { mutableStateOf(false) }
+    val showAlertQtyTopSheet = remember { mutableStateOf(false) }
     val timeLeftInSeconds = remember { mutableIntStateOf(TIMER_DURATION_SECONDS) }
     val isLoading by loadingFlow.collectAsState()
     val isContentVisible = remember { mutableStateOf(false) }
@@ -109,6 +115,7 @@ fun DetailPage(
         vm.paymentStatusEvent.collect { status ->
             when (status) {
                 PaymentStatus.Success -> {
+                    haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                     showQRBottomSheet.value = false
                     vm.intentTitleAppBar.intValue = R.string.successful
                     vm.intentTitleAppBarColor.intValue = R.color.green
@@ -118,22 +125,24 @@ fun DetailPage(
                     }
                 }
                 PaymentStatus.Closed -> {
+                    haptic.performHapticFeedback(HapticFeedbackType.Reject)
                     showQRBottomSheet.value = false
                     vm.intentTitleAppBar.intValue = R.string.failure
                     vm.intentTitleAppBarColor.intValue = R.color.red
                     vm.intentStatus.intValue = R.drawable.ic_x
                 }
                 PaymentStatus.Pending -> {
-                    showAlertToPayBottomSheet.value = true
+                    showAlertToPayTopSheet.value = true
                 }
             }
         }
     }
 
-    LaunchedEffect(showAlertToPayBottomSheet.value) {
-        if (showAlertToPayBottomSheet.value) {
+    LaunchedEffect(showAlertToPayTopSheet.value || showAlertQtyTopSheet.value) {
+        if (showAlertToPayTopSheet.value || showAlertQtyTopSheet.value) {
             delay(3000L)
-            showAlertToPayBottomSheet.value = false
+            showAlertToPayTopSheet.value = false
+            showAlertQtyTopSheet.value = false
         }
     }
 
@@ -153,6 +162,7 @@ fun DetailPage(
                         IconButton(
                             modifier = Modifier,
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                                 navController.safeNavigate("list_page_route")
                             }
                         ) {
@@ -235,7 +245,7 @@ fun DetailPage(
                     ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 200))
                 ) {
                     Text(
-                        "$ ${vm.totalPrice}.00",
+                        "${if (vm.currency.value == "USD") "$" else "៛"} ${vm.totalPrice}${if (vm.currency.value == "USD") ".00" else ""}",
                         modifier = Modifier
                             .padding(top = 16.dp),
                         color = colorResource(if (vm.isDetailVideoBackground.value) R.color.white else R.color.black),
@@ -256,8 +266,11 @@ fun DetailPage(
                         modifier = Modifier
                             .padding(vertical = 16.dp),
                         onMinusClick = {
-                            if (vm.qty.intValue > 1)
+                            if (vm.qty.intValue > 1) {
                                 vm.qty.intValue--
+                            } else {
+                                showAlertQtyTopSheet.value = true
+                            }
                         },
                         qtyText = vm.qty.intValue,
                         qtyTextColor = if (vm.isDetailVideoBackground.value) R.color.white else R.color.black,
@@ -329,11 +342,12 @@ fun DetailPage(
                     orderNo = state.orderNo,
                     model = vm.titleAppBar.intValue,
                     qty = vm.qty.intValue,
+                    currency = vm.currency.value,
                     amount = vm.totalPrice,
                     timeLeftInSeconds = timeLeftInSeconds.intValue,
                     onDismiss = {
                         showQRBottomSheet.value = false
-                        showAlertToPayBottomSheet.value = false
+                        showAlertToPayTopSheet.value = false
                     },
                     onRepay = {
                         vm.generateQrForPayment(
@@ -354,7 +368,7 @@ fun DetailPage(
         }
 
         AnimatedVisibility(
-            visible = showAlertToPayBottomSheet.value,
+            visible = showAlertToPayTopSheet.value,
             enter = slideInVertically(
                 initialOffsetY = { -it },
                 animationSpec = tween(durationMillis = 500)
@@ -368,6 +382,26 @@ fun DetailPage(
                 modifier = Modifier
                     .padding(top = 50.dp),
                 title = stringResource(R.string.scan_qr_to_pay)
+            )
+        }
+
+        AnimatedVisibility(
+            visible = showAlertQtyTopSheet.value,
+            enter = slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(durationMillis = 500)
+            ) + fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = slideOutVertically(
+                targetOffsetY = { -it },
+                animationSpec = tween(durationMillis = 500)
+            ) + fadeOut(animationSpec = tween(durationMillis = 500))
+        ) {
+            BottomSheetMsgComponent(
+                modifier = Modifier
+                    .padding(top = 50.dp),
+                background = colorResource(R.color.red),
+                textColor = colorResource(R.color.white),
+                title = stringResource(R.string.quantity_can_not_smaller_than_1)
             )
         }
 
