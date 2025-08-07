@@ -56,6 +56,7 @@ fun BottomSheetComponentPreview() {
         orderNo = "0123456789",
         model = R.string.iphone_16_pro_max,
         qty = 50,
+        currency = "USD",
         amount = 5000,
         timeLeftInSeconds = 150,
         onDismiss = { },
@@ -71,6 +72,7 @@ fun BottomSheetComponent(
     orderNo: String,
     model: Int,
     qty: Int,
+    currency: String,
     amount: Int,
     timeLeftInSeconds: Int,
     onDismiss: () -> Unit,
@@ -177,6 +179,7 @@ fun BottomSheetComponent(
                     orderNo = orderNo,
                     model = model,
                     qty = qty,
+                    currency = currency,
                     amount = amount
                 )
                 Text(

@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -87,12 +89,15 @@ fun ListComponent (
     iconRight: Painter? = null,
     onClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                 onClick.invoke()
             }
             .background(
@@ -151,12 +156,15 @@ fun ListComponentV2 (
     iconRight: Painter? = null,
     onClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                 onClick.invoke()
             }
             .background(

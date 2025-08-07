@@ -31,8 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -58,6 +60,7 @@ fun IntentPage(
     vm: ViewModel
 ) {
     val focusManager = LocalFocusManager.current
+    val haptic = LocalHapticFeedback.current
     val isContentVisible = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -77,6 +80,7 @@ fun IntentPage(
                     IconButton(
                         modifier = Modifier,
                         onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                             navController.safeNavigate("list_page_route")
                         }
                     ) {
@@ -148,6 +152,7 @@ fun IntentPage(
                     orderNo = vm.orderNo.value,
                     model = vm.titleAppBar.intValue,
                     qty = vm.qty.intValue,
+                    currency = vm.currency.value,
                     amount = vm.totalPrice
                 )
             }

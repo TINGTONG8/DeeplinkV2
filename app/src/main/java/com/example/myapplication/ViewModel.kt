@@ -43,6 +43,7 @@ class ViewModel : ViewModel() {
     val titleAppBar = mutableIntStateOf(R.string.iphone_16_pro_max)
     val detailImage = mutableIntStateOf(R.drawable.iphone_16_pro_max_detail)
     var price = mutableIntStateOf(5000)
+    val currency = mutableStateOf("USD")
     val totalPrice: Int get() = price.intValue * qty.intValue
     var qty = mutableIntStateOf(1)
     val orderNo = mutableStateOf("")
@@ -69,7 +70,7 @@ class ViewModel : ViewModel() {
         return TokenRequestModel(
             transOrderNo = orderNo.value,
             amt = totalPrice,
-            currency = "USD",
+            currency = currency.value,
             remark = "XD",
             notifyUrl = "https://sl.seokey.site/notify.php",
             expireMinutes = 15
