@@ -15,7 +15,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -55,22 +57,29 @@ fun AppNavigation(sharedViewModel: ViewModel) {
     UiController(useDarkIcons = true)
 
     val navController = rememberNavController()
-    val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
 
     LaunchedEffect(Unit) {
         launch {
             sharedViewModel.deepLinkResultEvent.collect { result ->
                 when (result) {
                     DeepLinkResult.Success -> {
+                        haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                         navController.navigate("intent_page_route") {
+                            sharedViewModel.intentTitleAppBar.intValue = R.string.successful
+                            sharedViewModel.intentTitleAppBarColor.intValue = R.color.green
+                            sharedViewModel.intentStatus.intValue = R.drawable.ic_check
                             popUpTo("list_page_route") { inclusive = false }
                         }
                     }
                     DeepLinkResult.Failure -> {
-                        navController.navigate("list_page_route") {
+                        haptic.performHapticFeedback(HapticFeedbackType.Reject)
+                        navController.navigate("intent_page_route") {
+                            sharedViewModel.intentTitleAppBar.intValue = R.string.failure
+                            sharedViewModel.intentTitleAppBarColor.intValue = R.color.red
+                            sharedViewModel.intentStatus.intValue = R.drawable.ic_x
                             popUpTo("list_page_route") { inclusive = true }
                         }
-                        Toast.makeText(context, "Payment Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

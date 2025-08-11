@@ -3,6 +3,10 @@ package com.example.myapplication.intent
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,11 +27,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +60,12 @@ fun IntentPage(
     vm: ViewModel
 ) {
     val focusManager = LocalFocusManager.current
+    val haptic = LocalHapticFeedback.current
+    val isContentVisible = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isContentVisible.value = true
+    }
 
     UiController(useDarkIcons = true)
 
@@ -67,6 +80,7 @@ fun IntentPage(
                     IconButton(
                         modifier = Modifier,
                         onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                             navController.safeNavigate("list_page_route")
                         }
                     ) {
@@ -110,31 +124,56 @@ fun IntentPage(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                modifier = Modifier
-                    .size(160.dp)
-                    .padding(vertical = 30.dp),
-                painter = painterResource(vm.intentStatus.intValue),
-                contentDescription = "--",
-                contentScale = ContentScale.Fit
-            )
-            IntentComponent (
-                modifier = Modifier,
-                orderNo = vm.orderNo.value,
-                model = vm.titleAppBar.intValue,
-                qty =  vm.qty.intValue,
-                amount = vm.totalPrice
-            )
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 200)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 200))
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(160.dp)
+                        .padding(vertical = 30.dp),
+                    painter = painterResource(vm.intentStatus.intValue),
+                    contentDescription = "--",
+                    contentScale = ContentScale.Fit
+                )
+            }
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 200)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 200))
+            ) {
+                IntentComponent(
+                    modifier = Modifier,
+                    orderNo = vm.orderNo.value,
+                    model = vm.titleAppBar.intValue,
+                    qty = vm.qty.intValue,
+                    currency = vm.currency.value,
+                    amount = vm.totalPrice
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
-            ButtonComponent(
-                modifier = Modifier
-                    .padding(bottom = 30.dp),
-                buttonText = stringResource(R.string.done),
-                buttonColor = colorResource(R.color.gray),
-                onClick = {
-                    navController.safeNavigate("list_page_route")
-                }
-            )
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 200)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 200))
+            ) {
+                ButtonComponent(
+                    modifier = Modifier
+                        .padding(bottom = 30.dp),
+                    buttonText = stringResource(R.string.done),
+                    buttonColor = colorResource(R.color.gray),
+                    onClick = {
+                        navController.safeNavigate("list_page_route")
+                    }
+                )
+            }
         }
     }
 }

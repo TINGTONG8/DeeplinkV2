@@ -23,6 +23,7 @@ fun IntentComponentPreview() {
         orderNo = "aBcDe12345",
         model = R.string.iphone_16_pro_max,
         qty = 1,
+        currency = "USD",
         amount = 5000
     )
 }
@@ -33,6 +34,7 @@ fun IntentComponent(
     orderNo: String,
     model: Int,
     qty: Int,
+    currency: String,
     amount: Int
 ) {
     Box(
@@ -65,7 +67,7 @@ fun IntentComponent(
             InfoRow(
                 modifier = Modifier.padding(top = 10.dp),
                 label = stringResource(R.string.amount_colon),
-                value = "$ ${amount}.00",
+                value = "${if (currency == "USD") "$" else "៛"} ${amount}${if (currency == "USD") ".00" else ""}",
             )
         }
     }

@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +40,15 @@ fun ListComponentPreview() {
             modifier = Modifier,
             title = stringResource(R.string.iphone_16_pro_max),
             iconRight = painterResource(R.drawable.iphone_list),
+            onClick = {}
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        ListComponentV2 (
+            modifier = Modifier,
+            modifierAlign = Alignment.CenterEnd,
+            title = stringResource(R.string.apple_vision_pro),
+            titleAlign = TextAlign.End,
+            iconRight = painterResource(R.drawable.vision_pro_list),
             onClick = {}
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -78,12 +89,15 @@ fun ListComponent (
     iconRight: Painter? = null,
     onClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                 onClick.invoke()
             }
             .background(
@@ -136,18 +150,21 @@ fun ListComponent (
 fun ListComponentV2 (
     modifier: Modifier,
     modifierAlign: Alignment = Alignment.CenterStart,
-    title: String,
+    title: String = stringResource(R.string.iphone_16_pro_max),
     titleAlign: TextAlign = TextAlign.Center,
     iconLeft: Painter? = null,
     iconRight: Painter? = null,
     onClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                 onClick.invoke()
             }
             .background(
@@ -173,7 +190,7 @@ fun ListComponentV2 (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(end = 145.dp),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.Crop
             )
         }
         Text(

@@ -2,23 +2,34 @@ package com.example.myapplication.listPage
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -34,6 +45,7 @@ import com.example.myapplication.UiController
 import com.example.myapplication.ViewModel
 import com.example.myapplication.utils.ListComponent
 import com.example.myapplication.utils.ListComponentV2
+import com.example.myapplication.utils.VideoPlayer
 import com.example.myapplication.utils.safeNavigate
 import kotlin.system.exitProcess
 
@@ -45,6 +57,11 @@ fun ListPage(
     vm: ViewModel
 ) {
     val focusManager = LocalFocusManager.current
+    val isContentVisible = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isContentVisible.value = true
+    }
 
     UiController(useDarkIcons = true)
 
@@ -76,6 +93,7 @@ fun ListPage(
             modifier = Modifier
                 .fillMaxSize()
                 .background(colorResource(R.color.white))
+                .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = 15.dp)
                 .clickable(
@@ -86,56 +104,155 @@ fun ListPage(
                     }
                 ),
         ) {
+            Spacer(modifier = Modifier.height(20.dp))
+
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it / 2 },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 100)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 100))
+            ) {
+                VideoPlayer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(20.dp)),
+                    video = R.raw.ipad_pro,
+                    onClick = {
+                        vm.isDetailVideoBackground.value = false
+                        vm.titleAppBar.intValue = R.string.ipad_pro
+                        vm.detailImage.intValue = R.drawable.ipad_pro
+                        vm.price.intValue = 1000
+                        vm.currency.value = "KHR"
+                        navController.safeNavigate("detail_page_route")
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it / 2 },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 200)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 200))
+            ) {
+                ListComponentV2(
+                    modifier = Modifier,
+                    modifierAlign = Alignment.CenterEnd,
+                    title = stringResource(R.string.apple_vision_pro),
+                    titleAlign = TextAlign.End,
+                    iconRight = painterResource(R.drawable.vision_pro_list),
+                    onClick = {
+                        vm.isDetailVideoBackground.value = true
+                        vm.titleAppBar.intValue = R.string.apple_vision_pro
+                        vm.detailImage.intValue = R.drawable.vision_pro_list
+                        vm.price.intValue = 20
+                        vm.currency.value = "USD"
+                        navController.safeNavigate("detail_page_route")
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(15.dp))
-            ListComponent (
-                modifier = Modifier,
-                title = stringResource(R.string.iphone_16_pro_max),
-                iconRight = painterResource(R.drawable.iphone_list),
-                onClick = {
-                    vm.titleAppBar.intValue = R.string.iphone_16_pro_max
-                    vm.detailImage.intValue = R.drawable.iphone_16_pro_max_detail
-                    vm.price.intValue = 2000
-                    navController.safeNavigate("detail_page_route")
-                }
-            )
+
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it / 2 },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 300)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 300))
+            ) {
+                ListComponent(
+                    modifier = Modifier,
+                    title = stringResource(R.string.iphone_16_pro_max),
+                    iconRight = painterResource(R.drawable.iphone_list),
+                    onClick = {
+                        vm.isDetailVideoBackground.value = false
+                        vm.titleAppBar.intValue = R.string.iphone_16_pro_max
+                        vm.detailImage.intValue = R.drawable.iphone_16_pro_max_detail
+                        vm.price.intValue = 30
+                        vm.currency.value = "USD"
+                        navController.safeNavigate("detail_page_route")
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
-            ListComponent (
-                modifier = Modifier,
-                title = stringResource(R.string.galaxy_s24),
-                iconLeft = painterResource(R.drawable.galaxy_s24_list),
-                onClick = {
-                    vm.titleAppBar.intValue = R.string.galaxy_s24
-                    vm.detailImage.intValue = R.drawable.galaxy_s24_detail
-                    vm.price.intValue = 1500
-                    navController.safeNavigate("detail_page_route")
-                }
-            )
+
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it / 2 },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 400)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 400))
+            ) {
+                ListComponent(
+                    modifier = Modifier,
+                    title = stringResource(R.string.galaxy_s24),
+                    iconLeft = painterResource(R.drawable.galaxy_s24_list),
+                    onClick = {
+                        vm.isDetailVideoBackground.value = false
+                        vm.titleAppBar.intValue = R.string.galaxy_s24
+                        vm.detailImage.intValue = R.drawable.galaxy_s24_detail
+                        vm.price.intValue = 40
+                        vm.currency.value = "USD"
+                        navController.safeNavigate("detail_page_route")
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
-            ListComponentV2 (
-                modifier = Modifier,
-                title = stringResource(R.string.apple_watch_series_10_),
-                iconLeft = painterResource(R.drawable.apple_watch_series_10_list),
-                onClick = {
-                    vm.titleAppBar.intValue = R.string.apple_watch_series_10
-                    vm.detailImage.intValue = R.drawable.apple_watch_series_10_detail
-                    vm.price.intValue = 500
-                    navController.safeNavigate("detail_page_route")
-                }
-            )
+
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it / 2 },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 500)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 500))
+            ) {
+                ListComponentV2(
+                    modifier = Modifier,
+                    title = stringResource(R.string.apple_watch_series_10_),
+                    iconLeft = painterResource(R.drawable.apple_watch_series_10_list),
+                    onClick = {
+                        vm.isDetailVideoBackground.value = false
+                        vm.titleAppBar.intValue = R.string.apple_watch_series_10
+                        vm.detailImage.intValue = R.drawable.apple_watch_series_10_detail
+                        vm.price.intValue = 50
+                        vm.currency.value = "USD"
+                        navController.safeNavigate("detail_page_route")
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
-            ListComponentV2 (
-                modifier = Modifier,
-                modifierAlign = Alignment.CenterEnd,
-                title = stringResource(R.string.galaxy_buds_3_pro),
-                titleAlign = TextAlign.End,
-                iconRight = painterResource(R.drawable.galaxy_buds_3_pro_list),
-                onClick = {
-                    vm.titleAppBar.intValue = R.string.galaxy_buds_3_pro
-                    vm.detailImage.intValue = R.drawable.galaxy_buds_3_pro_detail
-                    vm.price.intValue = 250
-                    navController.safeNavigate("detail_page_route")
-                }
-            )
+
+            AnimatedVisibility(
+                visible = isContentVisible.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it / 2 },
+                    animationSpec = tween(durationMillis = 500, delayMillis = 600)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500, delayMillis = 600))
+            ) {
+                ListComponentV2(
+                    modifier = Modifier,
+                    modifierAlign = Alignment.CenterEnd,
+                    title = stringResource(R.string.galaxy_buds_3_pro),
+                    titleAlign = TextAlign.End,
+                    iconRight = painterResource(R.drawable.galaxy_buds_3_pro_list),
+                    onClick = {
+                        vm.isDetailVideoBackground.value = false
+                        vm.titleAppBar.intValue = R.string.galaxy_buds_3_pro
+                        vm.detailImage.intValue = R.drawable.galaxy_buds_3_pro_detail
+                        vm.price.intValue = 60
+                        vm.currency.value = "USD"
+                        navController.safeNavigate("detail_page_route")
+                    }
+                )
+            }
         }
     }
 }
